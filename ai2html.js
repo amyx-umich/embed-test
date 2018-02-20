@@ -9,7 +9,7 @@ function main() {
 
     // Increment final digit for bug fixes, middle digit for new functionality.
     // Remember to add an entry in CHANGELOG when updating the version number.
-    var scriptVersion = "0.66.4";
+    var scriptVersion = "0.66.4-coe-customized-v2";
 
     // ai2html is a script for Adobe Illustrator that converts your Illustrator document into html and css.
     // Copyright (c) 2011-2015 The New York Times Company
@@ -156,7 +156,8 @@ function main() {
         scoop_asset_id: { defaultValue: "", includeInSettingsBlock: false, includeInConfigFile: false, useQuoteMarksInConfigFile: false, inputType: "text", possibleValues: "", notes: "" },
         scoop_username: { defaultValue: "", includeInSettingsBlock: false, includeInConfigFile: false, useQuoteMarksInConfigFile: false, inputType: "text", possibleValues: "", notes: "" },
         scoop_slug: { defaultValue: "", includeInSettingsBlock: false, includeInConfigFile: false, useQuoteMarksInConfigFile: false, inputType: "text", possibleValues: "", notes: "" },
-        scoop_external_edit_key: { defaultValue: "", includeInSettingsBlock: false, includeInConfigFile: false, useQuoteMarksInConfigFile: false, inputType: "text", possibleValues: "", notes: "" }
+        scoop_external_edit_key: { defaultValue: "", includeInSettingsBlock: false, includeInConfigFile: false, useQuoteMarksInConfigFile: false, inputType: "text", possibleValues: "", notes: "" },
+        alt_text: {defaultValue: "alt text here", includeInSettingsBlock: true, includeInConfigFile: true, useQuoteMarksInConfigFile: true, inputType: "text", possibleValues: "", notes: ""}                                         
     };
 
     // End of settings blocks copied from Google Spreadsheet.
@@ -498,6 +499,44 @@ var fonts = [
             module.exports[f.name] = f;
         });
         return;
+    }
+
+    // Partial html for standard iframe template
+
+    function addIframeHtml(position) {
+
+
+        var iframeHeaderPartial = "";
+
+        iframeHeaderPartial += "<!doctype html>\r";
+        iframeHeaderPartial += "<html lang='en'>\r";
+        iframeHeaderPartial += "<head>\r";
+        iframeHeaderPartial += "<meta name='viewport' content='width=device-width, initial-scale=1'>\r";
+
+        // zero margin and padding for iframe html
+        iframeHeaderPartial += "<style type='text/css' media='screen,print'>\r"
+        iframeHeaderPartial += "html, body {\r";
+        iframeHeaderPartial += "\tpadding:0;\r";
+        iframeHeaderPartial += "\tmargin:0;\r";
+        iframeHeaderPartial += "\t-webkit-font-smoothing:antialiased;\r";
+        iframeHeaderPartial += "}\r";
+        iframeHeaderPartial += "</style>\r";
+
+        iframeHeaderPartial += "</head>\r";
+        iframeHeaderPartial += "<body>\r";
+
+        var iframeFooterPartial = "";
+        iframeFooterPartial = "<script src='../../js/resizer-script.js' type='text/javascript'></script>\r";
+        iframeFooterPartial += "<script src-'https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.16/iframeResizer.contentWindow.min.js'></script>\r";
+        iframeFooterPartial += "</body>\r";
+        iframeFooterPartial += "</html>\r";
+
+
+        if (position == "header") {
+            return iframeHeaderPartial;
+        } else {
+            return iframeFooterPartial;
+        }
     }
 
     if (!isTestedIllustratorVersion(app.version)) {
@@ -2862,7 +2901,7 @@ var fonts = [
             src = settings.image_source_path + imgFile,
             html;
 
-        html = '\t\t<img id="' + imgId + '" class="' + imgClass + '"';
+        html = '\t\t<img id="' + imgId + '" class="' + imgClass + '" alt="' + settings.alt_text + '" ';
         if (isTrue(settings.use_lazy_loader)) {
             html += ' data-src="' + src + '"';
             // spaceholder while image loads
@@ -3445,7 +3484,7 @@ var fonts = [
         html += "\r</div>\r";
 
         // CSS
-        css = "<style type='text/css' media='screen,print'>\r" +
+        css = "<style type='text/css' media='screen,print'>\r@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,500,700,800');\r" +
             generatePageCss(containerId, settings) +
             content.css +
             "\r</style>\r" + responsiveCss;
